@@ -1,127 +1,81 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define MAX_NODES 100
+#include<stdio.h>
 
-typedef struct Node {
- int data;
- struct Node* next;
-} Node;
-
-typedef struct Graph {
- int numNodes;
- Node* adjLists[MAX_NODES];
-} Graph;
-
-Node* createNode(int data) {
- Node* newNode = (Node*)malloc(sizeof(Node));
- newNode->data = data;
- newNode->next = NULL;
- return newNode;
-}
+#include<stdlib.h>
+void Dfs(int n, int a[10][10], int source, int s[10]);
+void Bfs(int n, int a[10][10], int source, int s[10]);
+void main()
+	{
+	int n,a[10][10],i,j,source,s[10],ch;
 
 
-void addEdge(Graph* graph, int src, int dest) {
- Node* newNode = createNode(dest);
- newNode->next = graph->adjLists[src];
- graph->adjLists[src] = newNode;
-}
+	printf("Enter the Number of Nodes \n");
+	scanf("%d",&n);
 
-void DFS(Graph* graph, int vertex, int visited[]) {
- visited[vertex] = 1;
- printf("%d ", vertex);
- Node* temp = graph->adjLists[vertex];
- while (temp != NULL) {
- int adjVertex = temp->data;
- if (!visited[adjVertex])
- DFS(graph, adjVertex, visited);
- temp = temp->next;
- }
-}
+	printf("Enter the Adjacency Matrix \n");
+	for(i=1;i<=n;i++)
+	for(j=1;j<=n;j++)
+	scanf("%d",&a[i][j]);
 
-void BFS(Graph* graph, int start) {
- int visited[MAX_NODES] = {0};
- int queue[MAX_NODES];
- int front = -1, rear = -1;
- visited[start] = 1;
- queue[++rear] = start;
- while (front != rear) {
- int currentVertex = queue[++front];
- printf("%d ", currentVertex);
+	printf("Enter the Source Node \n");
+	scanf("%d",&source);
 
- Node* temp = graph->adjLists[currentVertex];
- while (temp != NULL) {
- int adjVertex = temp->data;
- if (!visited[adjVertex]) {
- visited[adjVertex] = 1;
- queue[++rear] = adjVertex;
- }
- temp = temp->next;
- }
- }
-}
-int main() {
- int choice, startNode;
- Graph* graph = (Graph*)malloc(sizeof(Graph));
- graph->numNodes = 0;
- do {
- printf("\nMenu:\n");
- printf("1. Add Edge\n");
- printf("2. Print reachable nodes using DFS\n");
- printf("3. Print reachable nodes using BFS\n");
- printf("4. Exit\n");
- printf("Enter your choice: ");
- scanf("%d", &choice);
- switch (choice) {
- case 1: {
- int src, dest;
- printf("Enter source and destination nodes: ");
- scanf("%d %d", &src, &dest);
- if (src >= MAX_NODES || dest >= MAX_NODES || src < 0 || dest < 0) {
- printf("Invalid input!\n");
+	for(i=1;i<=n;i++)
+	s[i]=0;
 
- break;
- }
- if (src > graph->numNodes) graph->numNodes = src + 1;
- if (dest > graph->numNodes) graph->numNodes = dest + 1;
- addEdge(graph, src, dest);
- break;
- }
- case 2: {
- printf("Enter the starting node for DFS: ");
- scanf("%d", &startNode);
- printf("Nodes reachable from %d using DFS: ", startNode);
- int visitedDFS[MAX_NODES] = {0};
- DFS(graph, startNode, visitedDFS);
- printf("\n");
- break;
- }
- case 3: {
- printf("Enter the starting node for BFS: ");
- scanf("%d", &startNode);
- printf("Nodes reachable from %d using BFS: ", startNode);
- BFS(graph, startNode);
- printf("\n");
- break;
- }
- case 4: {
- printf("Exiting...\n");
- break;
- }
- default:
- printf("Invalid choice!\n");
- }
- } while (choice != 4);
+	printf("1: Depth first Traversal 2:Breadth first Traversal \n");
+	scanf("%d",&ch);
+
+	switch(ch)
+	{
+	case 1:	printf("The DFS order is \n");
+		Dfs(n,a,source,s);
+		break;
+
+	case 2: printf("The BFS order is \n");
+		Bfs(n,a,source,s);
+		break;
+
+	default: exit(0);
+	}
+	}
 
 
- for (int i = 0; i < MAX_NODES; i++) {
- Node* current = graph->adjLists[i];
- while (current != NULL) {
- Node* temp = current;
- current = current->next;
- free(temp);
- }
- }
- free(graph);
- return 0;
-}
+void Dfs(int n, int a[10][10], int source, int s[10])
+	{
+	int i;
+
+	printf("%d\t", source);
+	s[source]=1;
+
+	for(i=1;i<=n;i++)
+	if( s[i] == 0 && a[source][i] == 1)
+	Dfs(n,a,i,s);
+	}
+
+void Bfs(int n, int a[10][10], int source, int s[10])
+	{
+	int q[10], f=1, r=1, i, u, v;
+
+	printf("%d\t", source);
+	s[source]=1;
+
+	q[r] = source;
+
+	while ( f <= r )
+	{
+	u = q[f];
+	f = f + 1;
+
+	for(i=1;i<=n;i++)
+	if( s[i] == 0 && a[u][i] == 1)
+	{
+	printf("%d\t", i);
+	s[i] = 1;
+	r = r+1;
+	q[r] = i;
+	}
+
+	}
+	}
+
 
